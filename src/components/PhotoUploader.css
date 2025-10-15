@@ -1,0 +1,126 @@
+.photo-uploader {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.uploader-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.uploader-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.uploader-title {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.uploader-description {
+  color: var(--secondary);
+  font-size: 1rem;
+}
+
+.upload-area {
+  flex: 1;
+  border: 3px dashed #cbd5e0;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  cursor: pointer;
+  transition: var(--transition);
+  background: #f8f9fa;
+  min-height: 300px;
+}
+
+.upload-area:hover {
+  border-color: var(--accent);
+  background: #e9ecef;
+}
+
+.upload-area.dragging {
+  border-color: #2ecc71;
+  background: #d5f4e6;
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.6;
+}
+
+.upload-text {
+  font-size: 1.1rem;
+  color: var(--secondary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.upload-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.upload-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.upload-tips {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #fff3cd;
+  border-radius: var(--radius);
+  border-left: 4px solid #ffc107;
+}
+
+.upload-tips h4 {
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.upload-tips ul {
+  list-style: none;
+  padding: 0;
+}
+
+.upload-tips li {
+  color: var(--secondary);
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.5;
+}
+
+.upload-tips li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #ffc107;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .upload-area {
+    padding: 2rem;
+    min-height: 250px;
+  }
+
+  .upload-icon {
+    font-size: 4rem;
+  }
+}
