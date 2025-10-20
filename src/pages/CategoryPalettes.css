@@ -1,0 +1,150 @@
+.category-palettes-container {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.category-palettes-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.category-palettes-header .back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.palettes-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.palette-catalog-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 20px var(--shadow);
+  border: 2px solid transparent;
+}
+
+.palette-catalog-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.palette-catalog-preview {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  aspect-ratio: 2/1;
+}
+
+.preview-color {
+  width: 100%;
+  height: 100%;
+  transition: var(--transition);
+}
+
+.palette-catalog-card:hover .preview-color {
+  transform: scale(1.05);
+}
+
+.palette-catalog-info {
+  padding: 1.5rem;
+}
+
+.palette-catalog-info h3 {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.palette-catalog-info p {
+  font-size: 0.95rem;
+  color: var(--secondary);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.palette-catalog-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.color-count {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #007a2d 0%, #499d58 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.photo-badge {
+  padding: 0.5rem 1rem;
+  background: #f0f0f0;
+  color: #666;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  color: var(--secondary);
+  margin-bottom: 2rem;
+}
+
+/* Brand page styles */
+.brand-header-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.brand-page-logo {
+  max-width: 200px;
+  max-height: 100px;
+  object-fit: contain;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .category-palettes-header {
+    text-align: left;
+  }
+
+  .category-palettes-header .back-button {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .palettes-catalog {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .palettes-catalog {
+    grid-template-columns: 1fr;
+  }
+
+  .palette-catalog-info h3 {
+    font-size: 1.25rem;
+  }
+}

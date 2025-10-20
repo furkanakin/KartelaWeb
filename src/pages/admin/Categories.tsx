@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
+import * as storage from '../../services/storage';
 import './Categories.css';
 
 interface Category {
@@ -31,8 +31,9 @@ const Categories: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/categories');
-      setCategories(response.data);
+      // localStorage'dan verileri al
+      const data = storage.getCategories();
+      setCategories(data);
     } catch (error) {
       console.error('Kategoriler yüklenirken hata:', error);
     } finally {
@@ -45,15 +46,15 @@ const Categories: React.FC = () => {
 
     try {
       if (editingCategory) {
-        await axios.put(`http://localhost:5000/api/categories/${formData.id}`, formData);
+        storage.updateCategory(formData.id, formData);
       } else {
-        await axios.post('http://localhost:5000/api/categories', formData);
+        storage.createCategory(formData);
       }
 
       fetchCategories();
       resetForm();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'İşlem başarısız');
+      alert(error.message || 'İşlem başarısız');
     }
   };
 
@@ -67,10 +68,10 @@ const Categories: React.FC = () => {
     if (!confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/categories/${id}`);
+      storage.deleteCategory(id);
       fetchCategories();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Silme işlemi başarısız');
+      alert(error.message || 'Silme işlemi başarısız');
     }
   };
 

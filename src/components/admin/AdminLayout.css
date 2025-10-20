@@ -1,13 +1,17 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #e8f0e8 0%, #d4e8d4 100%);
+  background-attachment: fixed;
 }
 
 .admin-sidebar {
-  width: 260px;
-  background: linear-gradient(180deg, #007a2d 0%, #005a21 100%);
-  color: white;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+  color: #1a202c;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -17,22 +21,25 @@
 }
 
 .sidebar-header {
-  padding: 24px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 32px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #007a2d 0%, #499d58 100%);
+  color: white;
 }
 
 .sidebar-logo {
   width: 100%;
   max-width: 180px;
   height: auto;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   filter: brightness(0) invert(1);
 }
 
 .sidebar-header h2 {
-  font-size: 18px;
+  font-size: 20px;
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .sidebar-nav {
@@ -44,22 +51,26 @@
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 14px 20px;
-  color: rgba(255, 255, 255, 0.9);
+  padding: 14px 24px;
+  margin: 4px 12px;
+  color: #4a5568;
   text-decoration: none;
-  transition: all 0.3s;
-  border-left: 3px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  font-weight: 500;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-left-color: rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(0, 122, 45, 0.08) 0%, rgba(73, 157, 88, 0.08) 100%);
+  color: #007a2d;
+  transform: translateX(4px);
 }
 
 .nav-item.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-left-color: #fff;
+  background: linear-gradient(135deg, #007a2d 0%, #499d58 100%);
+  color: white;
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 122, 45, 0.4);
 }
 
 .nav-icon {
@@ -111,18 +122,20 @@
 
 .admin-main {
   flex: 1;
-  margin-left: 260px;
+  margin-left: 280px;
   display: flex;
   flex-direction: column;
 }
 
 .admin-header {
-  background: white;
-  padding: 16px 24px;
-  border-bottom: 1px solid #e0e0e0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  padding: 20px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
 }
 
 .header-actions {

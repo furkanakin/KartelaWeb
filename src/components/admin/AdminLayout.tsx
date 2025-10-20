@@ -38,6 +38,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <span className="nav-icon">📁</span>
             <span>Kategoriler</span>
           </Link>
+          <Link to="/admin/brands" className={`nav-item ${isActive('/admin/brands')}`}>
+            <span className="nav-icon">🏷️</span>
+            <span>Markalar</span>
+          </Link>
           <Link to="/admin/palettes" className={`nav-item ${isActive('/admin/palettes')}`}>
             <span className="nav-icon">🎨</span>
             <span>Kartelalar</span>
@@ -49,6 +53,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <Link to="/admin/webhooks" className={`nav-item ${isActive('/admin/webhooks')}`}>
             <span className="nav-icon">🔗</span>
             <span>Webhooks</span>
+          </Link>
+          <Link to="/admin/whatsapp" className={`nav-item ${isActive('/admin/whatsapp')}`}>
+            <span className="nav-icon">💬</span>
+            <span>WhatsApp Ayarları</span>
           </Link>
         </nav>
 

@@ -82,18 +82,23 @@ const ColorItemEditor: React.FC<ColorItemEditorProps> = ({ items, onChange }) =>
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('image', file);
-
     setUploadingImage(true);
+
     try {
-      const response = await axios.post('http://localhost:5000/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setPatternForm({ ...patternForm, imageUrl: response.data.url });
+      // Mock mode: Convert to base64 data URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setPatternForm({ ...patternForm, imageUrl: base64String });
+        setUploadingImage(false);
+      };
+      reader.onerror = () => {
+        alert('Görsel yüklenirken hata oluştu. Lütfen tekrar deneyin.');
+        setUploadingImage(false);
+      };
+      reader.readAsDataURL(file);
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Görsel yüklenemedi');
-    } finally {
+      alert('Görsel yüklenemedi. Lütfen geçerli bir görsel dosyası seçin.');
       setUploadingImage(false);
     }
   };
@@ -284,12 +289,30 @@ const ColorItemEditor: React.FC<ColorItemEditorProps> = ({ items, onChange }) =>
                 />
               </div>
               <div className="form-group">
-                <label>Görsel</label>
+                <label>Görsel URL</label>
+                <input
+                  type="text"
+                  value={patternForm.imageUrl}
+                  onChange={(e) => setPatternForm({ ...patternForm, imageUrl: e.target.value })}
+                  placeholder="https://example.com/image.jpg veya /img/pattern.jpg"
+                />
+                <small style={{display: 'block', marginTop: '8px', color: '#666'}}>
+                  URL girebilir veya aşağıdan dosya yükleyebilirsiniz
+                </small>
+              </div>
+              <div className="form-group">
+                <label>Veya Dosya Yükle</label>
                 <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} />
-                {uploadingImage && <p>Yükleniyor...</p>}
+                {uploadingImage && <p style={{color: '#667eea', marginTop: '8px'}}>Yükleniyor...</p>}
                 {patternForm.imageUrl && (
-                  <div className="image-preview">
-                    <img src={`http://localhost:5000${patternForm.imageUrl}`} alt="Preview" />
+                  <div className="image-preview" style={{marginTop: '12px'}}>
+                    <img
+                      src={patternForm.imageUrl.startsWith('data:') || patternForm.imageUrl.startsWith('http') || patternForm.imageUrl.startsWith('/img')
+                        ? patternForm.imageUrl
+                        : `http://localhost:5000${patternForm.imageUrl}`}
+                      alt="Preview"
+                      style={{maxWidth: '100%', borderRadius: '8px', border: '2px solid #e0e0e0'}}
+                    />
                   </div>
                 )}
               </div>
@@ -329,7 +352,12 @@ const ColorItemEditor: React.FC<ColorItemEditorProps> = ({ items, onChange }) =>
             ) : (
               <>
                 <div className="pattern-preview">
-                  <img src={`http://localhost:5000${(item.data as Pattern).imageUrl}`} alt={(item.data as Pattern).name} />
+                  <img
+                    src={(item.data as Pattern).imageUrl.startsWith('data:') || (item.data as Pattern).imageUrl.startsWith('http') || (item.data as Pattern).imageUrl.startsWith('/img')
+                      ? (item.data as Pattern).imageUrl
+                      : `http://localhost:5000${(item.data as Pattern).imageUrl}`}
+                    alt={(item.data as Pattern).name}
+                  />
                 </div>
                 <div className="item-info">
                   <strong>{(item.data as Pattern).name}</strong>

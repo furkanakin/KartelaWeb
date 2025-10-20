@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { CategoryType, ColorPalette, Color, Pattern } from './types';
+import { useNavigate } from 'react-router-dom';
+import { CategoryType } from './types';
 import CategorySelector from './components/CategorySelector';
-import PaletteDisplay from './components/PaletteDisplay';
-import PhotoUploader from './components/PhotoUploader';
-import PreviewArea from './components/PreviewArea';
+import BrandSelector from './components/BrandSelector';
+import WhatsAppButton from './components/WhatsAppButton';
+import * as storage from './services/storage';
 import './App.css';
 
 interface ApiCategory {
@@ -27,14 +27,10 @@ interface ApiPalette {
 }
 
 function App() {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState<any[]>([]);
-  const [palettes, setPalettes] = useState<ApiPalette[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
-  const [selectedPalette, setSelectedPalette] = useState<ColorPalette | null>(null);
-  const [selectedColor, setSelectedColor] = useState<Color | Pattern | null>(null);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -42,81 +38,26 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const [categoriesRes, palettesRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/categories'),
-        axios.get('http://localhost:5000/api/palettes'),
-      ]);
-
-      const categoriesData = categoriesRes.data.map((cat: ApiCategory) => ({
-        id: cat.id,
-        name: cat.name,
-        description: cat.description,
-        icon: cat.icon,
-        palettes: [],
-      }));
-
-      // Paletleri kategorilere göre grupla
-      palettesRes.data.forEach((palette: ApiPalette) => {
-        const category = categoriesData.find((c: any) => c.id === palette.categoryId);
-        if (category) {
-          const formattedPalette = {
-            id: palette.id,
-            name: palette.name,
-            category: palette.categoryId as CategoryType,
-            description: palette.description,
-            colors: palette.items
-              .filter((item) => item.type === 'color')
-              .map((item) => item.data),
-            patterns: palette.items
-              .filter((item) => item.type === 'pattern')
-              .map((item) => item.data),
-          };
-          category.palettes.push(formattedPalette);
-        }
-      });
-
+      // localStorage'dan kategorileri ve markaları al
+      const categoriesData = storage.getCategories();
+      const brandsData = storage.getBrands();
       setCategories(categoriesData);
-      setPalettes(palettesRes.data);
+      setBrands(brandsData);
     } catch (error) {
       console.error('Veri yüklenirken hata:', error);
-      // Hata durumunda varsayılan kategorileri kullan
-      import('./data/palettes').then((module) => {
-        setCategories(module.categories);
-      });
     } finally {
       setLoading(false);
     }
   };
 
   const handleCategorySelect = (categoryId: CategoryType) => {
-    setSelectedCategory(categoryId);
-    setSelectedPalette(null);
-    setSelectedColor(null);
-    setUploadedImage(null);
-    setProcessedImage(null);
+    navigate(`/category/${categoryId}`);
   };
 
-  const handlePaletteSelect = (palette: ColorPalette) => {
-    setSelectedPalette(palette);
-    setSelectedColor(null);
-    setProcessedImage(null);
+  const handleBrandSelect = (brandId: string) => {
+    // Marka sayfasına yönlendir (şimdilik category ile aynı mantık)
+    navigate(`/brand/${brandId}`);
   };
-
-  const handleColorSelect = (color: Color | Pattern) => {
-    setSelectedColor(color);
-    setProcessedImage(null);
-  };
-
-  const handleImageUpload = (imageData: string) => {
-    setUploadedImage(imageData);
-    setProcessedImage(null);
-  };
-
-  const handleImageProcess = (processedImageData: string) => {
-    setProcessedImage(processedImageData);
-  };
-
-  const currentCategory = categories.find(c => c.id === selectedCategory);
 
   if (loading) {
     return (
@@ -153,60 +94,15 @@ function App() {
 
       <main className="app-main">
         <div className="container">
-          {!selectedCategory ? (
-            <CategorySelector
-              categories={categories}
-              onSelect={handleCategorySelect}
-            />
-          ) : (
-            <div className="workspace">
-              <div className="workspace-header">
-                <button
-                  className="back-button"
-                  onClick={() => setSelectedCategory(null)}
-                >
-                  ← Geri Dön
-                </button>
-                <h2 className="category-title">
-                  {currentCategory?.icon} {currentCategory?.name}
-                </h2>
-                <p className="category-description">{currentCategory?.description}</p>
-              </div>
+          <BrandSelector
+            brands={brands}
+            onSelect={handleBrandSelect}
+          />
 
-              <div className="workspace-content">
-                <div className="left-panel">
-                  <PaletteDisplay
-                    category={currentCategory!}
-                    selectedPalette={selectedPalette}
-                    selectedColor={selectedColor}
-                    onPaletteSelect={handlePaletteSelect}
-                    onColorSelect={handleColorSelect}
-                  />
-                </div>
-
-                <div className="right-panel">
-                  {!uploadedImage ? (
-                    <PhotoUploader
-                      category={selectedCategory}
-                      onImageUpload={handleImageUpload}
-                    />
-                  ) : (
-                    <PreviewArea
-                      originalImage={uploadedImage}
-                      processedImage={processedImage}
-                      selectedColor={selectedColor}
-                      category={selectedCategory}
-                      onImageProcess={handleImageProcess}
-                      onReset={() => {
-                        setUploadedImage(null);
-                        setProcessedImage(null);
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+          <CategorySelector
+            categories={categories}
+            onSelect={handleCategorySelect}
+          />
         </div>
       </main>
 
@@ -215,6 +111,8 @@ function App() {
           <p>© 2024 Kartela - Profesyonel Boya Çözümleri</p>
         </div>
       </footer>
+
+      <WhatsAppButton />
     </div>
   );
 }

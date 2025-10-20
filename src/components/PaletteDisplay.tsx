@@ -20,6 +20,21 @@ const PaletteDisplay = ({
     return 'hex' in item;
   };
 
+  // Rengin parlaklığına göre beyaz veya siyah yazı rengi döndür
+  const getContrastColor = (hexColor: string): string => {
+    // Hex'i RGB'ye çevir
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // Parlaklık hesapla (0-255 arası)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+    // Eşik değeri: 128'den büyükse koyu, küçükse açık renk kullan
+    return brightness > 128 ? '#000000' : '#FFFFFF';
+  };
+
   return (
     <div className="palette-display">
       <h3 className="palette-title">Kartela Koleksiyonları</h3>
@@ -48,16 +63,16 @@ const PaletteDisplay = ({
                         ? 'selected'
                         : ''
                     }`}
+                    style={{ backgroundColor: color.hex }}
                     onClick={(e) => {
                       e.stopPropagation();
                       onColorSelect(color);
                     }}
                   >
                     <div
-                      className="color-swatch"
-                      style={{ backgroundColor: color.hex }}
-                    />
-                    <div className="color-info">
+                      className="color-info"
+                      style={{ color: getContrastColor(color.hex) }}
+                    >
                       <div className="color-name">{color.name}</div>
                       <div className="color-code">{color.code}</div>
                       <div className="color-hex">{color.hex}</div>
@@ -73,16 +88,17 @@ const PaletteDisplay = ({
                         ? 'selected'
                         : ''
                     }`}
+                    style={{
+                      backgroundImage: `url(${pattern.imageUrl})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       onColorSelect(pattern);
                     }}
                   >
-                    <div
-                      className="color-swatch pattern-swatch"
-                      style={{ backgroundImage: `url(${pattern.imageUrl})` }}
-                    />
-                    <div className="color-info">
+                    <div className="color-info" style={{ color: '#FFFFFF' }}>
                       <div className="color-name">{pattern.name}</div>
                       <div className="color-code">{pattern.type}</div>
                     </div>

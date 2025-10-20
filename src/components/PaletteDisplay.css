@@ -64,7 +64,6 @@
 }
 
 .color-card {
-  background: white;
   border-radius: var(--radius-sm);
   overflow: hidden;
   cursor: pointer;
@@ -73,6 +72,8 @@
   box-shadow: 0 2px 8px var(--shadow);
   display: flex;
   flex-direction: column;
+  position: relative;
+  aspect-ratio: 1;
 }
 
 .color-card:hover {
@@ -86,38 +87,45 @@
   box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
 }
 
-.color-swatch {
-  width: 100%;
-  aspect-ratio: 1;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.pattern-swatch {
-  background-size: cover;
-  background-position: center;
-}
-
 .color-info {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
   padding: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Pattern kartları için daha güçlü kontrast */
+.pattern-card .color-info {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.pattern-card .color-info * {
+  color: #FFFFFF !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .color-name {
   font-weight: 600;
-  color: var(--primary);
   margin-bottom: 0.4rem;
   font-size: 1.05rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .color-code {
   font-size: 0.9rem;
-  color: var(--secondary);
   margin-bottom: 0.3rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .color-hex {
   font-size: 0.85rem;
-  color: #7f8c8d;
   font-family: 'Courier New', monospace;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .selected-color-preview {

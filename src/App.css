@@ -135,6 +135,18 @@
 @media (max-width: 1024px) {
   .workspace-content {
     grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Mobilde sağ panel (fotoğraf yükleme) üstte */
+  .right-panel {
+    order: 1;
+  }
+
+  /* Mobilde sol panel (kartela listesi) altta */
+  .left-panel {
+    order: 2;
   }
 
   .back-button {

@@ -1,0 +1,102 @@
+.brand-selector {
+  margin-bottom: 3rem;
+}
+
+.brand-selector-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.brand-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+.brand-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 30px rgba(0, 122, 45, 0.15);
+  border-color: #007a2d;
+}
+
+.brand-logo-wrapper {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.brand-logo-img {
+  max-width: 150px;
+  max-height: 80px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.brand-card:hover .brand-logo-img {
+  transform: scale(1.05);
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.brand-description {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .brand-selector-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .brand-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .brand-card {
+    padding: 1.5rem;
+  }
+
+  .brand-logo-wrapper {
+    padding: 1.5rem;
+    min-height: 100px;
+  }
+
+  .brand-name {
+    font-size: 1.25rem;
+  }
+
+  .brand-description {
+    font-size: 0.95rem;
+  }
+}

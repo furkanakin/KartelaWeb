@@ -116,6 +116,14 @@ VITE_USE_MOCK_API=true
 
 Bu modda gerçek renklendirme yapılmaz, orijinal fotoğraf döndürülür.
 
+### Admin Paneli Giriş Bilgileri
+
+Mock mode'da admin paneline giriş için:
+- **Kullanıcı Adı:** `admin`
+- **Şifre:** `admin123`
+
+Admin paneline `/admin/login` adresinden erişebilirsiniz.
+
 ## 📁 Proje Yapısı
 
 ```

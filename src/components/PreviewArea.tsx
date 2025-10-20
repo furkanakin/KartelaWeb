@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CategoryType, Color, Pattern } from '../types';
-import { processImage, mockProcessImage } from '../services/api';
+import { processImage } from '../services/api';
+import ComparisonModal from './ComparisonModal';
 import './PreviewArea.css';
 
 interface PreviewAreaProps {
@@ -22,8 +23,7 @@ const PreviewArea = ({
 }: PreviewAreaProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const useMockApi = import.meta.env.VITE_USE_MOCK_API === 'true';
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
 
   const handleProcess = async () => {
     if (!selectedColor) {
@@ -35,9 +35,7 @@ const PreviewArea = ({
     setError(null);
 
     try {
-      const apiFunction = useMockApi ? mockProcessImage : processImage;
-
-      const response = await apiFunction({
+      const response = await processImage({
         image: originalImage,
         color: selectedColor,
         category,
@@ -45,6 +43,8 @@ const PreviewArea = ({
 
       if (response.success) {
         onImageProcess(response.processedImage);
+        // Modal'ı otomatik aç
+        setShowComparisonModal(true);
       } else {
         setError(response.error || 'İşlem başarısız oldu');
       }
@@ -142,16 +142,16 @@ const PreviewArea = ({
             'Rengi Uygula'
           )}
         </button>
-
-        {useMockApi && (
-          <div className="mock-warning">
-            ⚠️ Mock mode aktif - Gerçek renklendirme yapılmıyor
-          </div>
-        )}
       </div>
 
       {processedImage && (
         <div className="download-section">
+          <button
+            className="compare-button"
+            onClick={() => setShowComparisonModal(true)}
+          >
+            🔍 Karşılaştır
+          </button>
           <a
             href={processedImage}
             download="kartela-preview.png"
@@ -160,6 +160,14 @@ const PreviewArea = ({
             📥 İndir
           </a>
         </div>
+      )}
+
+      {showComparisonModal && processedImage && (
+        <ComparisonModal
+          originalImage={originalImage}
+          processedImage={processedImage}
+          onClose={() => setShowComparisonModal(false)}
+        />
       )}
     </div>
   );

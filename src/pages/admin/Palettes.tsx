@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import ColorItemEditor from '../../components/admin/ColorItemEditor';
+import * as storage from '../../services/storage';
 import './Palettes.css';
 
 interface Category {
@@ -15,7 +15,8 @@ interface ColorOrPattern {
 }
 
 interface WebhookConfig {
-  url: string;
+  testUrl: string;
+  liveUrl: string;
   mode: 'test' | 'live';
   enabled: boolean;
 }
@@ -25,14 +26,19 @@ interface Palette {
   id: string;
   name: string;
   categoryId: string;
+  brandId?: string;
   description?: string;
   items: ColorOrPattern[];
   webhook?: WebhookConfig;
+  photoUploadEnabled?: boolean;
+  productName?: string;
+  productImage?: string;
 }
 
 const Palettes: React.FC = () => {
   const [palettes, setPalettes] = useState<Palette[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingPalette, setEditingPalette] = useState<Palette | null>(null);
@@ -40,13 +46,18 @@ const Palettes: React.FC = () => {
     id: '',
     name: '',
     categoryId: '',
+    brandId: '',
     description: '',
     items: [],
     webhook: {
-      url: '',
+      testUrl: '',
+      liveUrl: '',
       mode: 'test',
       enabled: false,
     },
+    photoUploadEnabled: true,
+    productName: '',
+    productImage: '',
   });
 
   useEffect(() => {
@@ -55,14 +66,16 @@ const Palettes: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const [palettesRes, categoriesRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/palettes'),
-        axios.get('http://localhost:5000/api/categories'),
-      ]);
-      setPalettes(palettesRes.data);
-      setCategories(categoriesRes.data);
+      // localStorage'dan verileri al
+      const palettesData = storage.getPalettes();
+      const categoriesData = storage.getCategories();
+      const brandsData = storage.getBrands();
+
+      setPalettes(palettesData);
+      setCategories(categoriesData);
+      setBrands(brandsData);
     } catch (error) {
-      console.error('Veri yüklenirken hata:', error);
+      console.error('Veriler yüklenirken hata:', error);
     } finally {
       setLoading(false);
     }
@@ -73,15 +86,15 @@ const Palettes: React.FC = () => {
 
     try {
       if (editingPalette) {
-        await axios.put(`http://localhost:5000/api/palettes/${formData.id}`, formData);
+        storage.updatePalette(formData.id, formData);
       } else {
-        await axios.post('http://localhost:5000/api/palettes', formData);
+        storage.createPalette(formData);
       }
 
       fetchData();
       resetForm();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'İşlem başarısız');
+      alert(error.message || 'İşlem başarısız');
     }
   };
 
@@ -95,20 +108,15 @@ const Palettes: React.FC = () => {
     if (!confirm('Bu kartelayı silmek istediğinizden emin misiniz?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/palettes/${id}`);
+      storage.deletePalette(id);
       fetchData();
     } catch (error: any) {
-      alert(error.response?.data?.message || 'Silme işlemi başarısız');
+      alert(error.message || 'Silme işlemi başarısız');
     }
   };
 
   const handleTestWebhook = async (id: string) => {
-    try {
-      await axios.post(`http://localhost:5000/api/palettes/${id}/test-webhook`);
-      alert('Webhook başarıyla test edildi!');
-    } catch (error: any) {
-      alert(error.response?.data?.message || 'Webhook test edilemedi');
-    }
+    alert('Webhook test özelliği yakında eklenecek.');
   };
 
   const resetForm = () => {
@@ -116,13 +124,18 @@ const Palettes: React.FC = () => {
       id: '',
       name: '',
       categoryId: '',
+      brandId: '',
       description: '',
       items: [],
       webhook: {
-        url: '',
+        testUrl: '',
+        liveUrl: '',
         mode: 'test',
         enabled: false,
       },
+      photoUploadEnabled: true,
+      productName: '',
+      productImage: '',
     });
     setEditingPalette(null);
     setShowForm(false);
@@ -180,6 +193,23 @@ const Palettes: React.FC = () => {
                   </div>
                 </div>
 
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Marka</label>
+                    <select
+                      value={formData.brandId || ''}
+                      onChange={(e) => setFormData({ ...formData, brandId: e.target.value })}
+                    >
+                      <option value="">Seçiniz (Opsiyonel)</option>
+                      {brands.map((brand) => (
+                        <option key={brand.id} value={brand.id}>
+                          {brand.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label>İsim *</label>
                   <input
@@ -202,9 +232,9 @@ const Palettes: React.FC = () => {
                 </div>
 
                 <div className="webhook-section">
-                  <h3>Webhook Ayarları</h3>
-                  <div className="form-group checkbox-group">
-                    <label>
+                  <div className="webhook-header">
+                    <h3>Webhook Ayarları</h3>
+                    <label className="switch">
                       <input
                         type="checkbox"
                         checked={formData.webhook?.enabled || false}
@@ -215,43 +245,125 @@ const Palettes: React.FC = () => {
                           })
                         }
                       />
-                      Webhook Aktif
+                      <span className="slider"></span>
                     </label>
                   </div>
 
                   {formData.webhook?.enabled && (
                     <>
                       <div className="form-group">
-                        <label>Webhook URL</label>
+                        <label>Test Webhook URL</label>
                         <input
                           type="url"
-                          value={formData.webhook.url}
+                          value={formData.webhook.testUrl}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              webhook: { ...formData.webhook!, url: e.target.value },
+                              webhook: { ...formData.webhook!, testUrl: e.target.value },
                             })
                           }
-                          placeholder="https://example.com/webhook"
+                          placeholder="https://test.example.com/webhook"
                         />
                       </div>
                       <div className="form-group">
-                        <label>Mod</label>
-                        <select
-                          value={formData.webhook.mode}
+                        <label>Live Webhook URL</label>
+                        <input
+                          type="url"
+                          value={formData.webhook.liveUrl}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              webhook: { ...formData.webhook!, mode: e.target.value as 'test' | 'live' },
+                              webhook: { ...formData.webhook!, liveUrl: e.target.value },
                             })
                           }
-                        >
-                          <option value="test">Test</option>
-                          <option value="live">Live</option>
-                        </select>
+                          placeholder="https://live.example.com/webhook"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Aktif Mod</label>
+                        <div className="mode-switch">
+                          <button
+                            type="button"
+                            className={`mode-btn ${formData.webhook.mode === 'test' ? 'active' : ''}`}
+                            onClick={() =>
+                              setFormData({
+                                ...formData,
+                                webhook: { ...formData.webhook!, mode: 'test' },
+                              })
+                            }
+                          >
+                            🧪 Test
+                          </button>
+                          <button
+                            type="button"
+                            className={`mode-btn ${formData.webhook.mode === 'live' ? 'active' : ''}`}
+                            onClick={() =>
+                              setFormData({
+                                ...formData,
+                                webhook: { ...formData.webhook!, mode: 'live' },
+                              })
+                            }
+                          >
+                            🚀 Live
+                          </button>
+                        </div>
                       </div>
                     </>
                   )}
+                </div>
+
+                <div className="webhook-section">
+                  <div className="webhook-header">
+                    <h3>Fotoğraf Yükleme</h3>
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={formData.photoUploadEnabled !== false}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            photoUploadEnabled: e.target.checked,
+                          })
+                        }
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  </div>
+                  <p className="hint-text">
+                    Bu kartelanın detay sayfasında fotoğraf yükleme alanı gösterilsin mi?
+                  </p>
+                </div>
+
+                <div className="webhook-section">
+                  <h3>Ürün Bilgileri</h3>
+                  <div className="form-group">
+                    <label>Ürün Adı</label>
+                    <input
+                      type="text"
+                      value={formData.productName || ''}
+                      onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
+                      placeholder="Düfa Zeolit İpek Mat İç Cephe Duvar Boyası"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Ürün Görseli</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setFormData({ ...formData, productImage: reader.result as string });
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                    />
+                    {formData.productImage && (
+                      <img src={formData.productImage} alt="Ürün" style={{ maxWidth: '200px', marginTop: '10px', borderRadius: '8px', display: 'block' }} />
+                    )}
+                  </div>
                 </div>
 
                 <ColorItemEditor

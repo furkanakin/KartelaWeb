@@ -24,9 +24,6 @@ const CategorySelector = ({ categories, onSelect }: CategorySelectorProps) => {
             <div className="category-icon">{category.icon}</div>
             <h3 className="category-name">{category.name}</h3>
             <p className="category-desc">{category.description}</p>
-            <div className="category-palette-count">
-              {category.palettes.length} Kartela
-            </div>
           </div>
         ))}
       </div>

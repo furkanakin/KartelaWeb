@@ -5,6 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    open: true
+    open: true,
+    proxy: {
+      '/api/webhook': {
+        target: 'https://n8n.kayalarai.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/webhook/, '')
+      }
+    }
   }
 })

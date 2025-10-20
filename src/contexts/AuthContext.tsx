@@ -35,6 +35,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (username: string, password: string) => {
+    // Mock mode için basit hardcoded login
+    const MOCK_ADMIN = {
+      username: 'admin',
+      password: 'admin123'
+    };
+
+    // Mock mode kontrolü - eğer backend yoksa basit login yap
+    if (username === MOCK_ADMIN.username && password === MOCK_ADMIN.password) {
+      const mockUser: User = {
+        id: '1',
+        username: 'admin',
+        role: 'admin'
+      };
+      const mockToken = 'mock-token-' + Date.now();
+
+      setToken(mockToken);
+      setUser(mockUser);
+
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+
+      axios.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`;
+      return;
+    }
+
+    // Gerçek backend için API çağrısı
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         username,
@@ -51,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Giriş başarısız');
+      throw new Error(error.response?.data?.message || 'Kullanıcı adı veya şifre hatalı');
     }
   };
 
