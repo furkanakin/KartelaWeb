@@ -40,15 +40,15 @@
 }
 
 .category-icon {
-  font-size: 4rem;
+  font-size: 6rem;
   margin-bottom: 1.5rem;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
 }
 
 .category-name {
-  font-size: 1.8rem;
+  font-size: 1.3rem;
   color: var(--primary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   font-weight: 600;
 }
 
